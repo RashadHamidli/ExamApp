@@ -1,12 +1,14 @@
 package com.company.service;
 
-import com.company.dto.request.UserRequestDTO;
-import com.company.dto.response.UserResponseDTO;
+import com.company.dto.request.UserRequest;
+import com.company.dto.response.UserResponse;
 import com.company.entity.User;
 import com.company.exception.CustomException;
 import com.company.exception.UserNotFoundException;
 import com.company.exception.ValidationException;
+import com.company.mapper.UserMapper;
 import com.company.repository.UserRepository;
+import com.company.util.LoggerUtil;
 import com.company.util.UserServiceUtil;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -23,14 +25,14 @@ public class UserService {
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public List<UserResponseDTO> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         try {
             List<User> users = userRepository.findAll();
             if (users.isEmpty()) {
                 throw new UserNotFoundException("no users found");
             }
-            logger.info("Found users: {}", users);
-            return users.stream().map(UserResponseDTO::fromUser).toList();
+            LoggerUtil.getLoggerInfo(logger, "Found users: {}", users);
+            return users.stream().map(UserMapper.INSTANCE::convertUserToUserResponse).toList();
         } catch (UserNotFoundException e) {
             CustomException.handleOperationException(e);
         } catch (Exception e) {
@@ -39,11 +41,11 @@ public class UserService {
         return null;
     }
 
-    public UserResponseDTO getUserById(Long id) {
+    public UserResponse getUserById(Long id) {
         try {
             User user = findById(id);
-            getLoggerInfo("found user", user);
-            return UserResponseDTO.fromUser(user);
+            LoggerUtil.getLoggerInfo(logger, "found user", user);
+            return UserMapper.INSTANCE.convertUserToUserResponse(user);
         } catch (UserNotFoundException e) {
             CustomException.handleOperationException(e);
         } catch (Exception e) {
@@ -52,11 +54,11 @@ public class UserService {
         return null;
     }
 
-    public UserResponseDTO getUserByUsername(String username) {
+    public UserResponse getUserByUsername(String username) {
         try {
             User user = getActiveUserByUsername(username);
-            getLoggerInfo("found user", user);
-            return UserResponseDTO.fromUser(user);
+            LoggerUtil.getLoggerInfo(logger, "found user", user);
+            return UserMapper.INSTANCE.convertUserToUserResponse(user);
         } catch (UserNotFoundException e) {
             CustomException.handleOperationException(e);
         } catch (Exception e) {
@@ -66,15 +68,15 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
+    public UserResponse saveUser(UserRequest userRequest) {
         try {
-            if (userRepository.existsByUsernameOrEmail(userRequestDTO.username(), userRequestDTO.email())) {
+            if (userRepository.existsByUsernameOrEmail(userRequest.username(), userRequest.email())) {
                 throw new ValidationException("Username Or Email already exists");
             }
-            User user = UserRequestDTO.toUser(userRequestDTO);
+            User user = UserMapper.INSTANCE.convertUserRequestToUser(userRequest);
             userRepository.save(user);
-            getLoggerInfo("User saved successfully", user);
-            return UserResponseDTO.fromUser(user);
+            LoggerUtil.getLoggerInfo(logger, "saved user: {}", user);
+            return UserMapper.INSTANCE.convertUserToUserResponse(user);
         } catch (ConstraintViolationException | UserNotFoundException | ValidationException e) {
             CustomException.handleOperationException(e);
         } catch (Exception e) {
@@ -84,15 +86,15 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDTO updateUser(String username, UserRequestDTO userRequestDTO) {
+    public UserResponse updateUser(String username, UserRequest userRequestDTO) {
         try {
-            User userRequest = UserRequestDTO.toUser(userRequestDTO);
+            User userRequest = UserMapper.INSTANCE.convertUserRequestToUser(userRequestDTO);
             User existingUser = getActiveUserByUsername(username);
             User updatedUser = UserServiceUtil.updateUser(existingUser, userRequest);
             userRepository.saveAndFlush(updatedUser);
-            getLoggerInfo("User update successfully ", updatedUser);
-            return UserResponseDTO.fromUser(updatedUser);
-        } catch (ConstraintViolationException |ValidationException | UserNotFoundException e) {
+            LoggerUtil.getLoggerInfo(logger, "User updated successfully", updatedUser);
+            return UserMapper.INSTANCE.convertUserToUserResponse(updatedUser);
+        } catch (ConstraintViolationException | ValidationException | UserNotFoundException e) {
             CustomException.handleOperationException(e);
         } catch (Exception e) {
             CustomException.handleUnexpectedException(e);
@@ -105,7 +107,7 @@ public class UserService {
             User user = getActiveUserByUsername(username);
             user.setStatus("inActive");
             userRepository.saveAndFlush(user);
-            getLoggerInfo("User delete successfully: ");
+            LoggerUtil.getLoggerInfo(logger, "User deleted successfully");
         } catch (UserNotFoundException e) {
             CustomException.handleOperationException(e);
         } catch (Exception e) {
@@ -113,24 +115,17 @@ public class UserService {
         }
     }
 
-    private User getByUsername(String username) {
+    protected User getByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(STR."user '\{username}' not found"));
     }
 
-    private User getActiveUserByUsername(String username) {
+    protected User getActiveUserByUsername(String username) {
         return userRepository.findByUsernameAndStatus(username, "ACTIVE")
                 .orElseThrow(() -> new UserNotFoundException(STR."user '\{username}' not found"));
     }
 
-    private User findById(Long id) {
+    protected User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(STR."user id '\{id}' not found"));
     }
 
-    private void getLoggerInfo(String msg, User user) {
-        logger.info(STR."\u001B[32m\{msg}{}\u001B[0m", user);
-    }
-
-    private void getLoggerInfo(String msg) {
-        logger.info(STR."\u001B[33m\{msg}{}\u001B[0m");
-    }
 }

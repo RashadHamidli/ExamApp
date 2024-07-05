@@ -54,4 +54,8 @@ public class User {
         this.createAt = LocalDateTime.now();
         this.status = "ACTIVE";
     }
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateAt = LocalDateTime.now();
+    }
 }

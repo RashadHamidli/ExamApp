@@ -1,25 +1,48 @@
 package com.company.controller;
 
-import ch.qos.logback.core.model.Model;
-import com.company.dto.response.QuestionResponseDTO;
+import com.company.dto.request.QuestionRequest;
+import com.company.dto.request.QuestionUpdateRequest;
+import com.company.dto.response.QuestionResponse;
 import com.company.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/questions")
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
 
     @GetMapping
-    public ResponseEntity<?> getAllQuestions() {
-        List<QuestionResponseDTO> questions= questionService.getAllQuestion();
+    public ResponseEntity<List<QuestionResponse>> getAllQuestions() {
+        List<QuestionResponse> questions = questionService.getAllQuestion();
         return ResponseEntity.ok(questions);
+    }
+
+    @PostMapping
+    public ResponseEntity<QuestionResponse> saveQuestion(@RequestBody QuestionRequest questionRequest) {
+        QuestionResponse response = questionService.saveQuestion(questionRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<QuestionResponse> getQuestionById(@PathVariable Long id) {
+        QuestionResponse questionResponse = questionService.getQuestionById(id);
+        return ResponseEntity.ok(questionResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<QuestionResponse> updateQuestion(@PathVariable Long id, QuestionUpdateRequest questionUpdateRequest) {
+        QuestionResponse questionResponse = questionService.updateQuestion(id, questionUpdateRequest);
+        return ResponseEntity.ok(questionResponse);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> deleteQuestion(@PathVariable Long id) {
+        questionService.deleteQuestion(id);
+        return ResponseEntity.ok().build();
     }
 }

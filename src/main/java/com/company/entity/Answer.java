@@ -1,12 +1,8 @@
 package com.company.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 @Entity
 @Data
@@ -20,7 +16,13 @@ public class Answer {
     private Long id;
     private String answer;
     @ManyToOne
+    @JoinColumn(name = "question_id", nullable = false)
     private Question question;
-    @OneToMany
-    private List<CorrectAnswer> correctAnswers;
+    @NotNull
+    private Boolean isCorrect;
+
+    @Override
+    public String toString(){
+        return STR."id: \{id} | answer: \{answer}";
+    }
 }

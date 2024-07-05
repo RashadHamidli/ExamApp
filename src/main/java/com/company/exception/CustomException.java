@@ -21,6 +21,10 @@ public class CustomException {
                 System.out.printf("\u001B[31m%s\u001B[0m%n", e.getMessage());
                 throw validationException;
             }
+            case QuestionNotFoundException questionNotFoundException -> {
+                System.out.printf("\u001B[31m%s\u001B[0m%n", e.getMessage());
+                throw questionNotFoundException;
+            }
             case ConstraintViolationException constraintViolationException -> {
                 System.out.printf("\u001B[31m%s\u001B[0m%n", ((ConstraintViolationException) e).getConstraintViolations().stream()
                         .map(ConstraintViolation::getMessage).collect(Collectors.joining("  or ")));
