@@ -3,7 +3,6 @@ package com.company.service;
 import com.company.dto.request.AnswerRequest;
 import com.company.dto.response.AnswerResponse;
 import com.company.entity.Answer;
-import com.company.entity.Choice;
 import com.company.exception.AnswerNotFoundException;
 import com.company.exception.CustomException;
 import com.company.exception.ValidationException;
@@ -11,8 +10,6 @@ import com.company.mapper.AnswerMapper;
 import com.company.repository.AnswerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

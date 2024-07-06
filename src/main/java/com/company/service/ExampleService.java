@@ -2,6 +2,7 @@ package com.company.service;
 
 import com.company.dto.request.ExampleRequest;
 import com.company.dto.response.QuestionResponse;
+import com.company.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,18 +15,29 @@ public class ExampleService {
     private final AnswerService answerService;
 
     public List<QuestionResponse> getExample() {
-        return questionService.getRandomQuestion(10);
+        try {
+            return questionService.getRandomQuestion(10);
+        } catch (Exception e) {
+            CustomException.handleUnexpectedException(e);
+        }
+        return null;
     }
 
     public Double createExample(ExampleRequest exampleRequest) {
-        return exampleRequest.questionAnswers().stream()
-                .mapToDouble(questionAnswer -> {
-                    Long questionId = questionAnswer.questionId();
-                    return questionAnswer.answerIds().stream()
-                            .mapToDouble(answerId -> answerService.checkCorrectAnswer(answerId, questionId))
-                            .sum();
-                })
-                .sum();
+        try {
+            double totalResult = exampleRequest.questionAnswers().stream()
+                    .flatMapToDouble(questionAnswer -> questionAnswer.answerIds().stream()
+                            .mapToDouble(answerId -> answerService.checkCorrectAnswer(answerId, questionAnswer.questionId())))
+                    .sum();
+            return calculatePercentage(totalResult, 10);
+        } catch (Exception e) {
+            CustomException.handleUnexpectedException(e);
+        }
+        return null;
+    }
+
+    private Double calculatePercentage(double totalScore, int numberOfQuestions) {
+        return totalScore * 100 / numberOfQuestions;
     }
 
 }
