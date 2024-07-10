@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class AnswerService {
     private final AnswerRepository answerRepository;
 
-    public AnswerResponse updateAnswerById(Long id, AnswerRequest answerRequest) {
+    public AnswerResponse updateAnswerById(String id, AnswerRequest answerRequest) {
         try {
             Answer foundAnswer = getAnswerById(id);
             Answer answer = AnswerMapper.INSTANCE.convertAnswerRequestToAnswer(answerRequest);
@@ -32,20 +32,24 @@ public class AnswerService {
         return null;
     }
 
-    public double checkCorrectAnswer(Long answerId, Long questionId) {
+    public double checkCorrectAnswer(String answerId, String questionId) {
         Answer answer = answerRepository.getReferenceById(answerId);
 
         if (questionId.equals(answer.getQuestion().getId()) && Boolean.TRUE.equals(answer.getIsCorrect())) {
             return switch (answer.getQuestion().getChoice()) {
-                case SINGLE_CHOICE -> 1;
-                case DOUBLE_CHOICE -> 0.5;
-                case THREE_CHOICE -> 1.0 / 3;
+                case SINGLE -> 1;
+                case DOUBLE -> 0.5;
+                case TRIPLE -> 1.0 / 3;
             };
         }
         return 0;
     }
 
-    private Answer getAnswerById(Long id) {
+    private Answer getAnswerById(String id) {
         return answerRepository.findById(id).orElseThrow(() -> new AnswerNotFoundException("answer not found"));
+    }
+
+    public Answer getAnswerByAnswerId(String answerId) {
+        return answerRepository.findById(answerId).orElseThrow(() -> new AnswerNotFoundException("answer not found"));
     }
 }

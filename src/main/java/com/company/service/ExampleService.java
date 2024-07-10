@@ -1,18 +1,25 @@
 package com.company.service;
 
-import com.company.dto.request.ExampleRequest;
+import com.company.dto.request.ExamRequest;
+import com.company.dto.request.QuestionAnswerRequest;
 import com.company.dto.response.QuestionResponse;
-import com.company.exception.CustomException;
+import com.company.entity.*;
+import com.company.exception.*;
+import com.company.repository.ExamRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ExampleService {
+    private final UserService userService;
     private final QuestionService questionService;
     private final AnswerService answerService;
+    private final ExamRepository examRepository;
 
     public List<QuestionResponse> getExample() {
         try {
@@ -23,17 +30,53 @@ public class ExampleService {
         return null;
     }
 
-    public Double createExample(ExampleRequest exampleRequest) {
+
+    @Transactional
+    public Double createExample(ExamRequest examRequest) {
         try {
-            double totalResult = exampleRequest.questionAnswers().stream()
+            double totalResult = examRequest.questionAnswers().stream()
                     .flatMapToDouble(questionAnswer -> questionAnswer.answerIds().stream()
-                            .mapToDouble(answerId -> answerService.checkCorrectAnswer(answerId, questionAnswer.questionId())))
+                            .mapToDouble(
+                                    answerId -> answerService.checkCorrectAnswer(
+                                            answerId, questionAnswer.questionId()
+                                    )
+                            ))
                     .sum();
-            return calculatePercentage(totalResult, 10);
+
+            double percentage = calculatePercentage(totalResult, 10);
+            saveExam(examRequest, percentage);
+            return percentage;
+        } catch (UserNotFoundException | QuestionNotFoundException | AnswerNotFoundException | ValidationException e) {
+            CustomException.handleOperationException(e);
         } catch (Exception e) {
             CustomException.handleUnexpectedException(e);
         }
         return null;
+    }
+
+    @Transactional
+    protected void saveExam(ExamRequest examRequest, double percentage) {
+        Exam exam = new Exam();
+        User user = userService.findById(examRequest.userId());
+        exam.setUser(user);
+        exam.setScore(percentage);
+
+        List<ExamQuestionAnswer> examQuestionAnswers = new ArrayList<>();
+
+        for (QuestionAnswerRequest questionAnswer : examRequest.questionAnswers()) {
+            Question question = questionService.getQuestionByQuestionId(questionAnswer.questionId());
+            for (String answerId : questionAnswer.answerIds()) {
+                Answer answer = answerService.getAnswerByAnswerId(answerId);
+                ExamQuestionAnswer examQuestionAnswer = new ExamQuestionAnswer();
+                examQuestionAnswer.setExam(exam);
+                examQuestionAnswer.setQuestion(question);
+                examQuestionAnswer.setAnswer(answer);
+                examQuestionAnswers.add(examQuestionAnswer);
+            }
+        }
+
+        exam.setQuestionAnswers(examQuestionAnswers);
+        examRepository.save(exam);
     }
 
     private Double calculatePercentage(double totalScore, int numberOfQuestions) {

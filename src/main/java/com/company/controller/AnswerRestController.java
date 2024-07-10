@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/answers")
 @RequiredArgsConstructor
-public class AnswerController {
+public class AnswerRestController {
 
     private final AnswerService answerService;
 
     @PutMapping("/{id}")
-    public ResponseEntity<AnswerResponse> updateAnswer(@PathVariable Long id, @RequestBody AnswerRequest answerRequest) {
+    public ResponseEntity<AnswerResponse> updateAnswer(@PathVariable String id, @RequestBody AnswerRequest answerRequest) {
         AnswerResponse answerResponse = answerService.updateAnswerById(id, answerRequest);
         return ResponseEntity.ok(answerResponse);
     }

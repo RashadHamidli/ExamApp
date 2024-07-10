@@ -7,7 +7,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-07-05T08:51:07+0400",
+    date = "2024-07-07T18:56:43+0400",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 public class AnswerMapperImpl implements AnswerMapper {
@@ -18,7 +18,7 @@ public class AnswerMapperImpl implements AnswerMapper {
             return null;
         }
 
-        Long id = null;
+        String id = null;
         String answer1 = null;
 
         id = answer.getId();
@@ -35,7 +35,7 @@ public class AnswerMapperImpl implements AnswerMapper {
             return null;
         }
 
-        Answer.AnswerBuilder answer = Answer.builder();
+        Answer.AnswerBuilder<?, ?> answer = Answer.builder();
 
         answer.id( answerResponse.id() );
         answer.answer( answerResponse.answer() );
@@ -49,7 +49,7 @@ public class AnswerMapperImpl implements AnswerMapper {
             return null;
         }
 
-        Answer.AnswerBuilder answer = Answer.builder();
+        Answer.AnswerBuilder<?, ?> answer = Answer.builder();
 
         answer.answer( answerRequest.answer() );
         answer.isCorrect( answerRequest.isCorrect() );

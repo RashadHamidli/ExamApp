@@ -2,6 +2,7 @@ package com.company.exception;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataAccessException;
 
 import java.util.stream.Collectors;
 
@@ -28,6 +29,10 @@ public class CustomException {
             case AnswerNotFoundException answerNotFoundException -> {
                 System.out.printf("\u001B[31m%s\u001B[0m%n", e.getMessage());
                 throw answerNotFoundException;
+            }
+            case DataAccessException dataAccessException -> {
+                System.out.printf("\u001B[31m%s\u001B[0m%n", e.getMessage());
+                throw dataAccessException;
             }
             case ConstraintViolationException constraintViolationException -> {
                 System.out.printf("\u001B[31m%s\u001B[0m%n", ((ConstraintViolationException) e).getConstraintViolations().stream()

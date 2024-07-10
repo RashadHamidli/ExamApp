@@ -12,7 +12,6 @@ public class UserServiceUtil {
             Optional.ofNullable(userRequest.getName()).ifPresent(foundUser::setName);
             Optional.ofNullable(userRequest.getSurname()).ifPresent(foundUser::setSurname);
             Optional.ofNullable(userRequest.getEmail()).ifPresent(foundUser::setEmail);
-            foundUser.setUpdateAt(LocalDateTime.now());
             return foundUser;
     }
 }

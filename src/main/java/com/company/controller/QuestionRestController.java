@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/questions")
 @RequiredArgsConstructor
-public class QuestionController {
+public class QuestionRestController {
     private final QuestionService questionService;
 
     @GetMapping
@@ -29,19 +29,19 @@ public class QuestionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<QuestionResponse> getQuestionById(@PathVariable Long id) {
+    public ResponseEntity<QuestionResponse> getQuestionById(@PathVariable String id) {
         QuestionResponse questionResponse = questionService.getQuestionById(id);
         return ResponseEntity.ok(questionResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<QuestionResponse> updateQuestion(@PathVariable Long id, QuestionUpdateRequest questionUpdateRequest) {
+    public ResponseEntity<QuestionResponse> updateQuestion(@PathVariable String id, QuestionUpdateRequest questionUpdateRequest) {
         QuestionResponse questionResponse = questionService.updateQuestion(id, questionUpdateRequest);
         return ResponseEntity.ok(questionResponse);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<?> deleteQuestion(@PathVariable Long id) {
+    public ResponseEntity<?> deleteQuestion(@PathVariable String id) {
         questionService.deleteQuestion(id);
         return ResponseEntity.ok().build();
     }

@@ -18,7 +18,7 @@ import java.util.Map;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Validated
-public class UserController {
+public class UserRestController {
     private final UserService userService;
 
     @GetMapping
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUsersById(@PathVariable("id") Long id) {
+    public ResponseEntity<UserResponse> getUsersById(@PathVariable("id") String id) {
         UserResponse usersById = userService.getUserById(id);
         return ResponseEntity.ok(usersById);
     }

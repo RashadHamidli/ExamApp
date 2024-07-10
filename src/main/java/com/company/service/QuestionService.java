@@ -5,6 +5,7 @@ import com.company.dto.request.QuestionUpdateRequest;
 import com.company.dto.response.QuestionResponse;
 import com.company.entity.Choice;
 import com.company.entity.Question;
+import com.company.entity.Status;
 import com.company.exception.CustomException;
 import com.company.exception.QuestionNotFoundException;
 import com.company.exception.ValidationException;
@@ -41,6 +42,7 @@ public class QuestionService {
         return null;
     }
 
+    @Transactional
     public QuestionResponse saveQuestion(QuestionRequest questionRequest) {
         try {
             Question question = QuestionMapper.INSTANCE.convertQuestionRequestToQuestion(questionRequest);
@@ -57,7 +59,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionResponse updateQuestion(Long id, QuestionUpdateRequest questionUpdateRequest) {
+    public QuestionResponse updateQuestion(String id, QuestionUpdateRequest questionUpdateRequest) {
         try {
             Question question = getQuestionByQuestionId(id);
             question.setQuestion(questionUpdateRequest.question());
@@ -74,10 +76,10 @@ public class QuestionService {
     }
 
     @Transactional
-    public void deleteQuestion(Long id) {
+    public void deleteQuestion(String id) {
         try {
             Question question = getQuestionByQuestionId(id);
-            question.setStatus("inActive");
+            question.setStatus(Status.ACTIVE);
             LoggerUtil.getLoggerInfo(logger, "deleteQuestion", question);
             questionRepository.saveAndFlush(question);
         } catch (ValidationException | QuestionNotFoundException e) {
@@ -88,7 +90,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionResponse getQuestionById(Long id) {
+    public QuestionResponse getQuestionById(String id) {
         try {
             Question question = getQuestionByQuestionId(id);
             LoggerUtil.getLoggerInfo(logger, "getQuestionById", question);
@@ -114,7 +116,7 @@ public class QuestionService {
     }
 
     @Transactional(Transactional.TxType.SUPPORTS)
-    protected Question getQuestionByQuestionId(Long questionId) {
+    protected Question getQuestionByQuestionId(String questionId) {
         return questionRepository.findById(questionId).orElseThrow(() -> new QuestionNotFoundException("Question not found"));
     }
 }

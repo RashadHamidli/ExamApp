@@ -1,5 +1,5 @@
 package com.company.dto.response;
 
-public record AnswerResponse(Long id,
+public record AnswerResponse(String id,
                              String answer) {
 }

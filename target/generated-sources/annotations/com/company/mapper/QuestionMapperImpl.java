@@ -13,7 +13,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-07-05T08:51:07+0400",
+    date = "2024-07-07T18:56:43+0400",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.1 (Oracle Corporation)"
 )
 public class QuestionMapperImpl implements QuestionMapper {
@@ -47,13 +47,13 @@ public class QuestionMapperImpl implements QuestionMapper {
             return null;
         }
 
-        Question.QuestionBuilder question = Question.builder();
+        Question.QuestionBuilder<?, ?> question = Question.builder();
 
         question.question( questionRequest.question() );
-        question.answers( answerRequestListToAnswerList( questionRequest.answers() ) );
         if ( questionRequest.choice() != null ) {
             question.choice( Enum.valueOf( Choice.class, questionRequest.choice() ) );
         }
+        question.answers( answerRequestListToAnswerList( questionRequest.answers() ) );
 
         return question.build();
     }
@@ -64,7 +64,7 @@ public class QuestionMapperImpl implements QuestionMapper {
             return null;
         }
 
-        Long id = null;
+        String id = null;
         String question1 = null;
         List<AnswerResponse> answers = null;
         Choice choice = null;

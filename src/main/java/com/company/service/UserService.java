@@ -2,6 +2,7 @@ package com.company.service;
 
 import com.company.dto.request.UserRequest;
 import com.company.dto.response.UserResponse;
+import com.company.entity.Status;
 import com.company.entity.User;
 import com.company.exception.CustomException;
 import com.company.exception.UserNotFoundException;
@@ -15,6 +16,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,7 +43,7 @@ public class UserService {
         return null;
     }
 
-    public UserResponse getUserById(Long id) {
+    public UserResponse getUserById(String id) {
         try {
             User user = findById(id);
             LoggerUtil.getLoggerInfo(logger, "found user", user);
@@ -77,7 +79,7 @@ public class UserService {
             userRepository.save(user);
             LoggerUtil.getLoggerInfo(logger, "saved user: {}", user);
             return UserMapper.INSTANCE.convertUserToUserResponse(user);
-        } catch (ConstraintViolationException | UserNotFoundException | ValidationException e) {
+        } catch (ConstraintViolationException | UserNotFoundException | ValidationException | DataAccessException e) {
             CustomException.handleOperationException(e);
         } catch (Exception e) {
             CustomException.handleUnexpectedException(e);
@@ -105,7 +107,7 @@ public class UserService {
     public void deleteUser(String username) {
         try {
             User user = getActiveUserByUsername(username);
-            user.setStatus("inActive");
+            user.setStatus(Status.DELETED);
             userRepository.saveAndFlush(user);
             LoggerUtil.getLoggerInfo(logger, "User deleted successfully");
         } catch (UserNotFoundException e) {
@@ -120,11 +122,11 @@ public class UserService {
     }
 
     protected User getActiveUserByUsername(String username) {
-        return userRepository.findByUsernameAndStatus(username, "ACTIVE")
+        return userRepository.findByUsernameAndStatus(username, Status.ACTIVE)
                 .orElseThrow(() -> new UserNotFoundException(STR."user '\{username}' not found"));
     }
 
-    protected User findById(Long id) {
+    protected User findById(String id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(STR."user id '\{id}' not found"));
     }
 

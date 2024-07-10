@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface QuestionRepository extends JpaRepository<Question, Long> {
+public interface QuestionRepository extends JpaRepository<Question, String> {
     @Query(value = "SELECT * FROM questions ORDER BY RANDOM() LIMIT 10", nativeQuery = true)
     List<Question> findRandomQuestions();
 }
