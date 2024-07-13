@@ -1,4 +1,4 @@
-package com.company.controller;
+package com.company.controller.rest;
 
 
 import com.company.dto.request.UserRequest;
