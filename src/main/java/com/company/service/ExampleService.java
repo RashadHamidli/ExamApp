@@ -3,11 +3,18 @@ package com.company.service;
 import com.company.dto.request.ExamRequest;
 import com.company.dto.request.QuestionAnswerRequest;
 import com.company.dto.response.QuestionResponse;
+import com.company.dto.response.UserExamResponse;
+import com.company.dto.response.UserRankResponse;
 import com.company.entity.*;
 import com.company.exception.*;
+import com.company.mapper.ExamMapper;
 import com.company.repository.ExamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -83,4 +90,20 @@ public class ExampleService {
         return totalScore * 100 / numberOfQuestions;
     }
 
+    public ResponseEntity<List<UserExamResponse>> getTopUserExam() {
+        Pageable topTen = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "score"));
+        List<Exam> content = examRepository.findAll(topTen).getContent();
+        List<UserExamResponse> list = content.stream().map(ExamMapper.INSTANCE::convertToExamMapper).toList();
+        return ResponseEntity.ok(list);
+    }
+
+    public ResponseEntity<UserRankResponse> getUserRank(String userId) {
+        Double userScore = examRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+                .getScore();
+
+        Long rank = examRepository.countByScoreGreaterThan(userScore) + 1;
+
+        return ResponseEntity.ok(new UserRankResponse(userId, userScore, rank));
+    }
 }

@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------------
+Test set: com.company.UserTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.014 s <<< FAILURE! -- in com.company.UserTest
+com.company.UserTest.test_retrieve_user_by_username_successfully -- Time elapsed: 0.009 s <<< ERROR!
+java.lang.UnsupportedClassVersionError: Preview features are not enabled for com/company/service/UserService (class file version 66.65535). Try running with '--enable-preview'
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1023)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:150)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:862)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:760)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:681)
+	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:639)
+	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+	at com.company.UserTest.test_retrieve_user_by_username_successfully(UserTest.java:22)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+
+com.company.UserTest.test_username_does_not_exist_in_database -- Time elapsed: 0.002 s <<< ERROR!
+java.lang.UnsupportedClassVersionError: Preview features are not enabled for com/company/service/UserService (class file version 66.65535). Try running with '--enable-preview'
+	at com.company.UserTest.test_username_does_not_exist_in_database(UserTest.java:38)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+

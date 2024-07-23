@@ -2,6 +2,8 @@ package com.company.controller.rest;
 
 import com.company.dto.request.ExamRequest;
 import com.company.dto.response.QuestionResponse;
+import com.company.dto.response.UserExamResponse;
+import com.company.dto.response.UserRankResponse;
 import com.company.service.ExampleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +29,16 @@ public class ExamRestController {
         response.put("Exam result", totalResult);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/top-users")
+    public ResponseEntity<List<UserExamResponse>> getTopUserExam(){
+        return exampleService.getTopUserExam();
+    }
+    @GetMapping("/user-rank/{userId}")
+    public ResponseEntity<UserRankResponse> getUserRank(@PathVariable String userId) {
+        return exampleService.getUserRank(userId);
+    }
+
+
 
 }

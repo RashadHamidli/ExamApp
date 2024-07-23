@@ -1,7 +1,7 @@
 package com.company;
 
 
-import com.company.controller.UserController;
+import com.company.controller.mvc.UserController;
 import com.company.dto.response.UserResponse;
 import com.company.exception.UserNotFoundException;
 import com.company.service.UserService;

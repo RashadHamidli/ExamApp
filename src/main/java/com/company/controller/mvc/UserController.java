@@ -1,4 +1,4 @@
-package com.company.controller;
+package com.company.controller.mvc;
 
 import com.company.dto.request.UserRequest;
 import com.company.dto.response.UserResponse;
